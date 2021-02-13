@@ -1,0 +1,118 @@
+*
+{
+    padding: 0px;
+    margin: 0px;
+}
+
+body
+{
+    display: flex;
+    flex-direction: row;
+    font-family: Calibri;
+}
+
+nav
+{
+    min-width: 300px;
+    border-right: 3px solid black;
+    height: 100vh;
+    background:rgb(102, 100, 104);
+    position: relative;
+    overflow-y: auto;
+}
+
+nav header
+{
+    font-weight: 800;
+    align-self: center;
+    font-size: 30px;
+    text-align: center;
+    margin: 20px;
+    color: white;
+}
+
+main
+{
+    width: auto;
+    height: 100vh;
+    padding-left: 10px;
+    background: rgb(124, 122, 126);
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+ul
+{
+    margin: 10px 0px 10px 30px;
+    font-size: 17px;
+}
+
+.nav-link
+{
+    display: block;
+    width: auto;
+    font-size: 20px;
+    border-top: 1px solid black;
+    padding: 15px 0px 15px 25px;
+    text-decoration: none;
+    color: rgb(219, 216, 216);
+}
+
+main header
+{
+    font-size: 30px;
+    font-weight:400;
+    margin-top: 10px;
+    color: white;
+}
+
+main p
+{
+    font-size: 18px;
+    margin: 0px 10px 0px 10px;
+    text-align: justify;
+}
+
+code
+{
+    padding: 10px;
+    margin: 10px;
+    background-color: rgb(165, 164, 167);
+    display: block;
+    line-height: 18px;
+    overflow: auto;
+}
+
+#footer
+{
+    width: 100%;
+    height: 10px;
+}
+
+@media (max-width: 800px)
+{
+    body
+    {
+        flex-direction: column;
+    }
+    nav
+    {
+        width: 100%;
+        min-width: 0px;
+        border-right: none;
+        border-bottom: 0.5vh solid black;
+        height: 30vh;
+        background:rgb(102, 100, 104);
+        position: relative;
+        overflow-y: auto;
+    }
+    main
+    {
+        width: auto;
+        height: 69.5vh;
+        padding-left: 10px;
+        background: rgb(124, 122, 126);
+        overflow-y: auto;
+        flex-grow: 1;
+    }
+}

@@ -1,0 +1,196 @@
+<!DOCTYPE html> 
+
+<html>
+
+<head>
+    <title>OSDev documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+    <nav id="navbar">
+        <header>OS Development</header>
+        <a class="nav-link" href="#Introduction">Introduction</a>
+        <a class="nav-link" href="#Getting_Started">Getting Started</a>
+        <a class="nav-link" href="#The_Bootloader">The Bootloader</a>
+        <a class="nav-link" href="#The_Kernel">The Kernel</a>
+        <a class="nav-link" href="#Interrupt_Handling">Interrupt Handling</a>
+        <a class="nav-link" href="#Writing_Device_Drivers">Writing Device Drivers</a>
+        <a class="nav-link" href="#The_GUI">The GUI</a>
+        <a class="nav-link" href="#Finishing_Up">Finishing Up</a>
+    </nav>
+
+    <main id="main-doc">
+        <section class="main-section" id="Introduction">
+            <header>Introduction</header>
+            <p>&nbsp;&nbsp;Operating system development involves a lot of work. Starting from 
+                writing system software to writing interrupt handlers to writing tons of drivers 
+                for devices from various manufacturers. It is probably the most complex kind of software 
+                anyone can think of writing. Writing a good operating system involves a lot of research, time 
+                and dedication. I would start by letting you know operating system development is NOT a lucrative
+                venture and I would advice anyone just to do it for the fun and knowledge you'll gain from it. 
+                <br>&nbsp;&nbsp;The next section would introduce the steps you'll need to take to develop a skeleton for
+                your OS. This tutorial assumes you have previous knowledge of low level languages like C, C++ and Assembly
+                languages. If you don't know what i'm talking about i'll advice you to visit some tutorials on the above
+                languages before proceeding.
+            </p>
+        </section>
+        <section class="main-section" id="Getting_Started">
+            <header>Getting Started</header>
+            <p>&nbsp;&nbsp;Depending on your development environment, you'll be installing some tools needed to compile 
+                your code for the target machine. The tools we'll be needing are:
+            </p>
+            <ul>
+                <li>An assembly language compiler.</li>
+                <li>A c/c++ toolchain.</li>
+                <li>A virtual machine.</li>
+            </ul>
+            <p>&nbsp;&nbsp;The recommended assembly language compiler to use with this tutorial is the NASM compiler 
+                because it is free and has an easy-to-use syntax. It can be downloaded for different platforms <a target="_blank" href="nasm.us">here</a>.
+                <br>&nbsp;&nbsp;The recommended c/c++ toolchain is the gcc toolchain. It's also free and contains many tools we'll be using to compile and
+                link our c/c++ code. 
+                <br>&nbsp;&nbsp;A virtual machine is needed to test our OS in realtime. This will prevent us the stress of restarting the PC anytime tests are needed to be run. 
+                <br>&nbsp;&nbsp;To see how to set up the NASM compiler for this project, click <a target="_blank">here.</a>
+                <br>&nbsp;&nbsp;To see how to set up gcc C/C++ toolchain for this project, click <a target="_blank">here.</a>
+                <br>&nbsp;&nbsp;To see how to set up the virtual machine for this project, click <a target="_blank">here.</a>
+            </p>
+            
+
+        </section>
+        <section class="main-section" id="The_Bootloader">
+            <header>The Bootloader</header>
+            <p>&nbsp;&nbsp;The bootloader is the first thing to setup in an OS. It sets up the PC
+                and loads our kernel from the disk. It's also responsible for functions such as:
+            </p>
+            <ul>
+                <li>Setting the graphics mode.</li>
+                <li>Switching to protected or long mode.</li>
+                <li>Enabling Paging.</li>
+                <li>Mapping memory and so on.</li>
+            </ul>
+            <p>&nbsp;&nbsp;Here is a code snippet from the bootloader that 
+                defines a 16 bit code segment and sets our program to run at the appropriate address in memory.
+            </p>
+            <code>
+                <pre>
+[bits 16]
+[org 0x7c00]</pre>
+            </code>
+            <p>&nbsp;&nbsp;Here is another snippet that switches to text mode.
+            </p>
+            <code>
+                <pre>
+mov ah, 0x0e
+int 10h</pre>
+            </code>
+            <p>&nbsp;&nbsp;And this one switches the OS to protected mode.</p>
+            <code>
+                <pre>
+mov eax, cr0
+or eax, 0x1
+mov cr0, eax</pre>
+            </code>
+            
+            <p>&nbsp;The rest of the bootloader loads the kernel from a specific sector on the disk, switches to protected
+                mode, enables paging, switches to a beautiful graphics mode and then executes our kernel.
+            </p>
+
+        </section>
+        <section class="main-section" id="The_Kernel">
+            <header>The Kernel</header>
+            <p>&nbsp;&nbsp;This is the most important part of any OS. Some of its functions are:</p>
+            <ul>
+                <li>Allocates memory for programs to run.</li>
+                <li>Runs system functions and manages processes.</li>
+                <li>Provides an interface for users to access the system.</li>
+                <li>Provides access to either a GUI or command line for command execution.</li>
+            </ul>
+            <p>&nbsp;&nbsp;This is a snippet from the kernel that displays the text "Hello World!"
+                on the screen using the C++ language.
+            </p>
+            <code>
+                <pre>
+uint8_t* screen_address = (uint8_t*)0xb8000;
+screen_address[0] = 'H';
+screen_address[2] = 'e';
+screen_address[4] = 'l';
+screen_address[6] = 'l';
+screen_address[8] = 'o';
+screen_address[10] = ' ';
+screen_address[12] = 'W';
+screen_address[14] = 'o';
+screen_address[16] = 'r';
+screen_address[18] = 'l';
+screen_address[20] = 'd';
+screen_address[22] = '!';</pre>
+            </code>
+
+        </section>
+        <section class="main-section" id="Interrupt_Handling">
+            <header>Interrupt Handling</header>
+            <p>&nbsp;&nbsp;Interrupt handling is a very essential part of a responsive OS.
+                Its basic function is to replace polling in time consuming functions and also handle
+                input from external peripherals. Interrupts are mapped to the Programmable Interrupt Controller (PIC)
+                in the CPU. When an interrupt is raised, the respecive interrupt handler is called and if it is not found, a 
+                default interrupt handler (written by you) is run. Interrupts are assigned numbers known as Interrupt numbers.
+                 Following are some interrupts and their respective numbers. 
+            </p>
+            <ul>
+                <li>Timer Interrupt - (0x0)</li>
+                <li>Keyboard Interrupt - (0x2)</li>
+                <li>Primary Channel IDE Controller - (0xe)</li>
+                <li>Secondary Channel IDE Controller - (0xf)</li>
+                <li>Mouse Interrupt - (0xa)</li>
+            </ul>
+            <P>&nbsp;&nbsp;Here is a snippet from the keyboard interrupt handler that accepts a key and displays
+                it's value on screen.
+            </P>
+            <code>
+                <pre>
+int handleKeyboardInterrupt(unsigned char key)
+{
+    screen[currentPosition] = key;
+    currentPosition += 2;
+    return key;
+}</pre>
+            </code>
+
+        </section>
+        <section class="main-section" id="Writing_Device_Drivers">
+            <header>Writing Device Drivers</header>
+            <p>Device drivers are needed to make different peripherals connected to your PC work.
+                Devices such as the mouse, keyboard, USB devices, hdds, etc. all need device drivers to 
+                even function at all. 
+                <br>
+                &nbsp;&nbsp;To write device drivers, we need to go into the documentation or specification of the required device,
+                 extract information and apply that in writing our drivers.
+            </p>
+        </section>
+        <section class="main-section" id="The_GUI">
+            <header>The GUI</header>
+            <p>&nbsp;&nbsp;This is the part of the Kernel that handles what is displayed on screen. It is not neccesary as an alternative
+                is available. You could either use a GUI (Graphical User Interface) in your OS or a CLI (Command Line Interface).
+                To use a GUI, you would need to write a graphics card driver and a whole GUI system. You will then integrate the other
+                parts of the OS to work with it.
+            </p>
+        </section>
+        <section class="main-section" id="Finishing_Up">
+            <header>Finishing Up</header>
+            <p>&nbsp;&nbsp;There's a lot to cover when developing an OS. We haven't even touched the following
+                aspects yet </p>
+                <ul>
+                    <li>Filesystems.</li>
+                    <li>Hard disks.</li>
+                    <li>Enabling paging.</li>
+                    <li>USB devices.</li>
+                    <li>Internet connectivty.</li>
+                    <li>And a lot more.</li>
+                </ul>
+            <p>&nbsp;&nbsp;In the next version of this documentation, we'll cover all of these and much more.</p>
+        </section>
+        <div id="footer"></div>
+    </main>
+
+</body>
+</html>
